@@ -1,0 +1,32 @@
+---
+- name: Configuration srv
+  hosts: all
+  become: true
+
+  roles:
+    - common
+
+- name: Configuration srv-app
+  hosts: appservers
+  become: true
+
+  roles:
+    - docker
+
+
+- name: Configuration srv-db
+  hosts: dbservers
+  become: true
+
+  tasks:
+    - name: Installer PostgreSQL
+      apt:
+        name: postgresql 
+        state: present
+        update_cache: true
+
+    - name: Démarrer PostgreSQL
+      service:
+        name: postgresql
+        state: started
+        enabled: true

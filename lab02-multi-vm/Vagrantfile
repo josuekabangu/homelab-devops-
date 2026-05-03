@@ -1,0 +1,46 @@
+Vagrant.configure("2") do |config|
+    
+  # VM 1 : srv-app
+  config.vm.define "app" do |app|
+    app.vm.box = "bento/ubuntu-22.04"
+    app.vm.hostname = "srv-app"
+    app.vm.network "private_network", ip: "192.168.56.11"
+        
+    app.vm.provider "virtualbox" do |vb|
+      vb.name  = "srv-app"
+      vb.memory = "1024"
+      vb.cpus  = 1 
+    end
+  end
+
+  # VM 2 : srv-db
+  config.vm.define "db" do |db|
+    db.vm.box = "bento/ubuntu-22.04"
+    db.vm.hostname = "srv-db"
+    db.vm.network "private_network", ip: "192.168.56.12"
+
+    db.vm.provider "virtualbox" do |vb|
+      vb.name = "srv-db"
+      vb.memory = "1024"
+      vb.cpus = 1
+    end
+
+    db.vm.provision "shell", inline: <<-SHELL
+      cp /vagrant/.vagrant/machines/app/virtualbox/private_key /tmp/app_key
+      chmod 600 /tmp/app_key
+      chown vagrant:vagrant /tmp/app_key
+      cp /vagrant/.vagrant/machines/db/virtualbox/private_key /tmp/db_key
+      chmod 600 /tmp/db_key
+      chown vagrant:vagrant /tmp/db_key
+    SHELL
+
+    db.vm.provision "ansible_local" do |ansible|
+      ansible.playbook          = "ansible/playbook.yml"
+      ansible.inventory_path    = "ansible/inventory.ini"
+      ansible.limit             = "all"
+      ansible.provisioning_path = "/vagrant"
+      ansible.install_mode      = "pip"
+    end
+  end
+
+end

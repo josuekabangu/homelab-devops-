@@ -1,0 +1,25 @@
+---
+
+- name: Configuration ALL servers
+  hosts: all
+  become: true
+
+  roles:
+    - common
+
+- name: Configuration srv-app
+  hosts: appservers
+  become: true
+
+  roles: 
+    - docker
+    - nginx
+
+- name: Configuration srv-db 
+  hosts: dbservers
+  become: true
+
+  roles:
+    - postgresql
+
+

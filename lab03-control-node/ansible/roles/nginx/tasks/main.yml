@@ -1,0 +1,26 @@
+# ================================================
+# ROLE : Nginx
+# Objectif : Installer Nginx dans un serveur
+# ================================================
+---
+
+- name: Mise à jour des paquets
+  apt:
+    update_cache: true
+
+
+- name: Installation de Nginx
+  apt:
+    name: nginx
+    state: present
+    update_cache: true
+
+- name: Démarrage de Nginx
+  service:
+    name: nginx
+    state: started
+    enabled: true
+
+- name: Afficher un message de confirmation
+  debug:
+    msg: "✅ {{ inventory_hostname }} configuré avec le role Nginx"

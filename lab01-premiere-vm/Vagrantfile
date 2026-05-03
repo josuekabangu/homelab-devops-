@@ -1,0 +1,40 @@
+# ================================================
+# LAB 01 — Première VM Vagrant
+# Objectif : créer et explorer une VM Ubuntu simple
+# ================================================
+
+Vagrant.configure("2") do |config|
+
+  # La box = image de base Ubuntu 22.04
+  config.vm.box = "bento/ubuntu-22.04"
+
+  # Nom d'hôte visible dans la VM (comme un vrai serveur)
+  config.vm.hostname = "srv-lab01"
+
+  # Réseau privé : accessible depuis Windows sur 192.168.56.10
+  config.vm.network "private_network", ip: "192.168.56.10"
+
+  # Ressources allouées à la VM
+  config.vm.provider "virtualbox" do |vb|
+    vb.name   = "lab01-srv"
+    vb.memory = "2048"   # 2 Go de RAM
+    vb.cpus   = 2        # 2 coeurs CPU
+  end
+
+  # Provisioning : script exécuté automatiquement au premier démarrage
+  config.vm.provision "shell", inline: <<-SHELL
+    echo "=== Mise à jour du système ==="
+    apt-get update -y
+
+    echo "=== Installation des outils de base ==="
+    apt-get install -y curl wget git htop net-tools
+
+    echo "=== Infos du serveur ==="
+    echo "Hostname : $(hostname)"
+    echo "IP       : $(hostname -I)"
+    echo "OS       : $(lsb_release -d | cut -f2)"
+
+    echo "✅ srv-lab01 est prêt !"
+  SHELL
+
+end

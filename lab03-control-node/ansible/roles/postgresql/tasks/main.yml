@@ -1,0 +1,25 @@
+# ================================================
+# ROLE : postgresql
+# Objectif : Installer postgresql dans un serveur
+# ================================================
+---
+
+- name: Mettre à jour les paquets
+  apt:
+    update_cache: true
+
+- name: Installation postgresql
+  apt:
+    name: postgresql
+    state: present
+    update_cache: true
+
+- name: Démarrage du service postgresql
+  service:
+    name: postgresql
+    state: started
+    enabled: true
+
+- name: Afficher un message de confirmation
+  debug:
+    msg: "✅ {{ inventory_hostname }} configuré avec le role Postgresql"

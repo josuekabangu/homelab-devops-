@@ -1,0 +1,31 @@
+# ================================================
+# ROLE : Docker
+# Objectif : Installer docker dans un serveur
+# ================================================
+---
+
+- name: Mettre à jour les paquets
+  apt: 
+    update_cache: true
+
+- name: Installation de docker
+  apt:
+    name: docker.io
+    state: present
+    update_cache: true
+
+- name: Démarrage de docker
+  service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Ajout vagrant au groupe docker
+  user:
+    name: vagrant
+    groups: docker
+    append: true
+
+- name: Afficher un message de confirmation
+  debug:
+    msg: "✅ {{ inventory_hostname }} configuré avec le role Docker"

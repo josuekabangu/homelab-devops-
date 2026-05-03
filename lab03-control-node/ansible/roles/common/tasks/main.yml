@@ -1,0 +1,30 @@
+# ================================================
+# ROLE : Common
+# Objectif : Installer des outils de bas dans un serveur
+# ================================================
+---
+
+- name: Mettre à jour la liste des paquets
+  apt: 
+    update_cache: true
+
+- name: Installation des outils de base
+  apt:
+    name: 
+      - curl
+      - wget
+      - git 
+      - htop
+      - net-tools
+      - vim
+    state: present
+
+- name: Création du dossier /opt/apps
+  file:
+    path: /opt/apps
+    state: directory
+    mode: '0755'
+
+- name: Affichage du message de confirmation 
+  debug: 
+    msg: "✅ {{ inventory_hostname }} configuré avec le role common"
