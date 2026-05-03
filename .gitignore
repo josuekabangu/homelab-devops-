@@ -1,0 +1,13 @@
+# Vagrant
+.vagrant/
+
+# Environnement
+.env
+*.env
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
