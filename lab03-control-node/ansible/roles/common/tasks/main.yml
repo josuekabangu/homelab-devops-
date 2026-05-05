@@ -24,6 +24,8 @@
     path: /opt/apps
     state: directory
     mode: '0755'
+    owner: vagrant
+    group: vagrant
 
 - name: Affichage du message de confirmation 
   debug: 
