@@ -15,6 +15,7 @@
     - docker
     - nginx
     - nodejs
+    - certbot
 
 - name: Configuration srv-db 
   hosts: dbservers

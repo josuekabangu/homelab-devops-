@@ -1,0 +1,21 @@
+# ================================================
+# ROLE : certbot 
+# Objectif : Installer certbot dans un serveur
+# ================================================
+---
+
+- name: Mise à jour des paquets
+  apt:
+    update_cache: true
+
+- name: Installation de certbot
+  apt:
+    name: 
+      - certbot
+      - python3-certbot-nginx
+    state: present
+    update_cache: true 
+
+- name: Afficher  un message de confirmation
+  debug:
+    msg: "✅ {{ inventory_hostname }} configuré avec le role Certbot"

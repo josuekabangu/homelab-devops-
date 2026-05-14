@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 User=vagrant
-ExecStart=autossh -M 0 -N -i /home/vagrant/.ssh/tunnel_key -R 80:localhost:80 root@72.62.21.162
+ExecStart=autossh -M 0 -N -i /home/vagrant/.ssh/tunnel_key -R 80:localhost:80 -R 443:localhost:443 root@72.62.21.162
 Restart=always
 
 [Install]
