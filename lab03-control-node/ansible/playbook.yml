@@ -14,6 +14,7 @@
   roles: 
     - docker
     - nginx
+    - nodejs
 
 - name: Configuration srv-db 
   hosts: dbservers

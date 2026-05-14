@@ -1,0 +1,34 @@
+# ================================================
+# ROLE : Nodejs
+# Objectif : Installer Nodejs 18 dans un serveur
+# ================================================
+---
+
+- name: Télécharger le script NodeSource
+  get_url:
+    url: https://deb.nodesource.com/setup_18.x
+    dest: /tmp/setup_nodejs.sh
+    mode: '0755'
+
+- name: Exécuter le script NodeSource
+  shell: bash /tmp/setup_nodejs.sh
+
+- name: Supprimer paquets nodejs conflictuels
+  apt:
+    name:
+      - libnode-dev
+      - libnode72
+      - nodejs
+    state: absent
+    purge: true
+
+- name: Installer Node.js 18
+  apt:
+    name: nodejs
+    state: latest
+    update_cache: true
+    
+
+- name: Afficher un message de confirmation
+  debug:
+    msg: "✅ {{ inventory_hostname }} configuré avec le role Nodejs"
