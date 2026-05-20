@@ -143,6 +143,17 @@ homelab-devops/
 | n8n | https://n8n.akanzair.com | Docker + PostgreSQL |
 | BudgetMaster | https://budget.akanzair.com | Django + React + PostgreSQL |
 
+## 📸 Screenshots
+
+### BudgetMaster — App de gestion budgétaire
+![BudgetMaster](docs/screenshots/budget.png)
+
+### n8n — Automatisation de workflows
+![n8n](docs/screenshots/n8n.png)
+
+### Grafana — Monitoring et visualisation
+![Grafana](docs/screenshots/grafana.png)
+
 ---
 
 ## 🔭 Prochaines étapes
