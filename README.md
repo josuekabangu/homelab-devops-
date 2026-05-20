@@ -1,30 +1,43 @@
 # 🏗️ Homelab DevOps — Infrastructure as Code
 
-> Homelab DevOps progressif : VMs Vagrant → Configuration Ansible → Conteneurisation Docker → Exposition via tunnel SSH → vers Kubernetes
+> Infrastructure complète : VMs Vagrant → Configuration Ansible → Docker → Tunnel SSH → HTTPS → Applications en production sur akanzair.com
 
 [![Vagrant](https://img.shields.io/badge/Vagrant-2.x-blue)](https://www.vagrantup.com/)
 [![Ansible](https://img.shields.io/badge/Ansible-2.10-red)](https://www.ansible.com/)
 [![Docker](https://img.shields.io/badge/Docker-29.x-blue)](https://www.docker.com/)
+[![HTTPS](https://img.shields.io/badge/HTTPS-Let's%20Encrypt-green)](https://letsencrypt.org/)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
 ## 🎯 Objectif
 
-Construire une infrastructure professionnelle à partir d'un PC Windows, en appliquant les pratiques DevOps réelles :
+Transformer un PC Windows en serveur professionnel hébergeant plusieurs applications, accessibles sur internet via akanzair.com, en appliquant les pratiques DevOps réelles :
 - **Infrastructure as Code** — tout est décrit dans des fichiers, rien à la main
 - **Idempotence** — les scripts peuvent être relancés sans danger
-- **Séparation des responsabilités** — dev, ops, monitoring clairement séparés
+- **Séparation des responsabilités** — infra, apps, secrets clairement séparés
 
 ---
 
 ## 🗺️ Architecture
 
 ```
-PC Windows (hôte)
-├── srv-ansible  192.168.56.20  ← Control Node Ansible
-├── srv-app      192.168.56.11  ← Docker + Nginx + Portainer
-└── srv-db       192.168.56.12  ← PostgreSQL
+Internet
+    │
+    ▼
+akanzair.com (VPS — 72.62.21.162)
+    │  tunnel SSH autossh (ports 80 + 443)
+    ▼
+srv-app (192.168.56.11) — Nginx reverse proxy
+    ├── https://portainer.akanzair.com  → Portainer :9000
+    ├── https://grafana.akanzair.com    → Grafana :3000
+    ├── https://llm.akanzair.com        → Ollama :11434 (GPU)
+    ├── https://n8n.akanzair.com        → n8n :5678
+    └── https://budget.akanzair.com     → BudgetMaster :8000
 
-srv-app:80 ──tunnel SSH -R──▶ VPS akanzair.com:8080
+srv-db (192.168.56.12) — PostgreSQL
+    ├── base n8n
+    └── base budget
+
+PC Windows (hôte) — Ollama GPU (Quadro P2000)
 ```
 
 ---
@@ -35,11 +48,15 @@ srv-app:80 ──tunnel SSH -R──▶ VPS akanzair.com:8080
 |-------|------|
 | **Vagrant** | Création et gestion des VMs |
 | **VirtualBox** | Hyperviseur |
-| **Ansible** | Configuration automatique des serveurs |
+| **Ansible** | Configuration automatique (6 rôles) |
 | **Docker** | Conteneurisation des applications |
-| **Nginx** | Reverse proxy |
-| **SSH Tunnel** | Exposition sécurisée sur internet |
+| **Nginx** | Reverse proxy + HTTPS |
+| **Certbot** | Certificats SSL Let's Encrypt |
+| **autossh** | Tunnel SSH permanent (systemd) |
 | **Portainer** | Gestion Docker via interface web |
+| **Grafana** | Visualisation des métriques |
+| **Ollama** | LLM local sur GPU |
+| **n8n** | Automatisation de workflows |
 
 ---
 
@@ -47,10 +64,10 @@ srv-app:80 ──tunnel SSH -R──▶ VPS akanzair.com:8080
 
 | Lab | Objectif | Compétences |
 |-----|----------|------------|
-| [lab01](labs/lab01-premiere-vm/) | Première VM Vagrant | Vagrant, VirtualBox, provisioning |
-| [lab02](labs/lab02-multi-vm/) | Ansible + 2 VMs | Ansible, inventory, playbook, rôles |
-| [lab03](labs/lab03-control-node/) | Control Node Ansible | Architecture multi-VM, rôles avancés |
-| [lab04](labs/lab04-tunnel-ssh/) | Tunnel SSH | SSH -R, exposition internet, pare-feu |
+| [lab01](lab01-premiere-vm/) | Première VM Vagrant | Vagrant, VirtualBox, provisioning |
+| [lab02](lab02-multi-vm/) | Ansible + 2 VMs | Ansible, inventory, playbook, rôles |
+| [lab03](lab03-control-node/) | Control Node + 6 rôles | Architecture multi-VM, Docker, Nginx, Certbot |
+| [lab04](lab04-tunnel-ssh/) | Tunnel SSH | SSH -R, autossh, systemd, exposition internet |
 
 ---
 
@@ -61,16 +78,16 @@ srv-app:80 ──tunnel SSH -R──▶ VPS akanzair.com:8080
 - Vagrant 2+
 - Git
 
-### Lancer un lab
+### Lancer l'infrastructure complète
 ```bash
 git clone https://github.com/josuekabangu/homelab-devops-.git
-cd homelab-devops-/labs/lab03-control-node
+cd homelab-devops-/lab03-control-node
 vagrant up
 ```
 
 ### Résultat attendu
 ```
-srv-app  →  ok=15  changed=0  failed=0  ✅
+srv-app  →  ok=24  changed=0  failed=0  ✅
 srv-db   →  ok=10  changed=0  failed=0  ✅
 ```
 
@@ -79,51 +96,60 @@ srv-db   →  ok=10  changed=0  failed=0  ✅
 ## 📁 Structure du projet
 
 ```
-labs/
-├── lab01-premiere-vm/
-│   ├── Vagrantfile
-│   └── GUIDE.md
-├── lab02-multi-vm/
-│   ├── Vagrantfile
-│   ├── ansible/
-│   │   ├── inventory.ini
-│   │   ├── playbook.yml
-│   │   └── roles/
-│   └── GUIDE.md
-├── lab03-control-node/
+homelab-devops/
+│
+├── lab01-premiere-vm/          ← VM simple + provisioning
+├── lab02-multi-vm/             ← Ansible + 2 VMs
+├── lab03-control-node/         ← Infrastructure complète
 │   ├── Vagrantfile
 │   ├── ansible/
-│   │   ├── inventory.ini
 │   │   ├── playbook.yml
 │   │   └── roles/
-│   │       ├── common/
-│   │       ├── docker/
-│   │       ├── nginx/
-│   │       └── postgresql/
-│   └── GUIDE.md
-└── lab04-tunnel-ssh/
-    └── GUIDE.md
+│   │       ├── common/         ← outils de base
+│   │       ├── docker/         ← Docker + Compose
+│   │       ├── nginx/          ← reverse proxy
+│   │       ├── nodejs/         ← Node.js 18
+│   │       ├── postgresql/     ← base de données
+│   │       └── certbot/        ← HTTPS Let's Encrypt
+│   ├── nginx-configs/          ← configs reverse proxy
+│   │   ├── portainer.conf
+│   │   ├── grafana.conf
+│   │   ├── llm.conf
+│   │   ├── n8n.conf
+│   │   └── budget.conf
+│   └── systemd/
+│       └── autossh-tunnel.service
+│
+├── lab04-tunnel-ssh/           ← Exposition internet
+│
+├── services/                   ← Configs de production
+│   ├── monitoring/             ← Portainer + Grafana
+│   ├── n8n/                    ← Automatisation
+│   └── budget/                 ← App budget (BudgetMaster)
+│
+└── scripts/
+    └── backup.sh               ← Backup PostgreSQL + volumes
 ```
 
 ---
 
-## 🌐 Résultat final
+## 🌐 Services déployés
 
-Service Nginx de `srv-app` accessible publiquement via tunnel SSH :
-
-```
-http://akanzair.com:8080  →  srv-app:80 (Nginx)
-```
+| Service | URL | Stack |
+|---------|-----|-------|
+| Portainer | https://portainer.akanzair.com | Docker |
+| Grafana | https://grafana.akanzair.com | Docker |
+| Ollama LLM | https://llm.akanzair.com | GPU local |
+| n8n | https://n8n.akanzair.com | Docker + PostgreSQL |
+| BudgetMaster | https://budget.akanzair.com | Django + React + PostgreSQL |
 
 ---
 
 ## 🔭 Prochaines étapes
 
-- [ ] Nginx reverse proxy — routing par sous-domaine
-- [ ] Grafana — dashboards et métriques
-- [ ] Ollama — LLM local sur GPU
-- [ ] CI/CD — GitLab pipeline de déploiement
-- [ ] Kubernetes — migration des conteneurs Docker
+- [ ] Prometheus + alerting
+- [ ] CI/CD — GitLab pipeline
+- [ ] Kubernetes — migration des conteneurs
 
 ---
 
