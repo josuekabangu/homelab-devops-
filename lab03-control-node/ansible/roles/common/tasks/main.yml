@@ -17,6 +17,7 @@
       - htop
       - net-tools
       - vim
+      - postgresql-client
     state: present
 
 - name: Création du dossier /opt/apps
