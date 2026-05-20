@@ -66,6 +66,16 @@ PC Windows (hôte) — Ollama GPU (Quadro P2000)
 
 ---
 
+## ✅ Réalisations
+
+- **6 rôles Ansible** réutilisables et idempotents
+- **5 services HTTPS** déployés sur akanzair.com
+- **2 bases PostgreSQL** (n8n + budget) sur srv-db
+- **Backups automatiques** quotidiens (PostgreSQL + volumes Docker)
+- **Tunnel SSH permanent** avec reconnexion automatique (autossh + systemd)
+
+---
+
 ## 📚 Labs — Parcours pédagogique
 
 | Lab | Objectif | Compétences |
@@ -74,49 +84,6 @@ PC Windows (hôte) — Ollama GPU (Quadro P2000)
 | [lab02](lab02-multi-vm/) | Ansible + multi-VM | Inventaire, playbooks, rôles |
 | [lab03](lab03-control-node/) | Control Node Ansible | Architecture, Docker, Nginx, PostgreSQL, Certbot |
 | [lab04](lab04-tunnel-ssh/) | Exposition internet | SSH -R, GatewayPorts, autossh, systemd |
-
----
-
-## 🔌 Focus Lab03 — Control Node Ansible
-
-Le Control Node (`srv-ansible`) configure automatiquement :
-
-- **srv-app** → Docker + Nginx + Certbot
-- **srv-db** → PostgreSQL
-
-### Structure Ansible
-
-```
-ansible/
-├── inventory.ini
-├── playbook.yml
-└── roles/
-    ├── common/         ← outils de base (tous les serveurs)
-    ├── docker/         ← Docker + Compose
-    ├── nginx/          ← reverse proxy
-    ├── nodejs/         ← Node.js 18 (build frontend)
-    ├── postgresql/     ← base de données
-    └── certbot/        ← HTTPS Let's Encrypt
-```
-
-### Résultat `vagrant up`
-
-```
-srv-app  →  ok=24  changed=0  failed=0  ✅
-srv-db   →  ok=10  changed=0  failed=0  ✅
-```
-
----
-
-## 🌐 Focus Lab04 — Tunnel SSH
-
-Objectif : exposer les services sur internet via un **tunnel SSH inversé**.
-
-```
-Navigateur → akanzair.com → VPS → SSH -R → srv-app → Nginx → service
-```
-
-Service systemd `autossh-tunnel.service` — tunnel permanent avec reconnexion automatique.
 
 ---
 
@@ -175,16 +142,6 @@ Certificats HTTPS via Certbot Let's Encrypt sur tous les sous-domaines.
 
 ---
 
-## ✅ Réalisations
-
-- **6 rôles Ansible** réutilisables et idempotents
-- **5 services HTTPS** déployés sur akanzair.com
-- **2 bases PostgreSQL** (n8n + budget) sur srv-db
-- **Backups automatiques** quotidiens (PostgreSQL + volumes Docker)
-- **Tunnel SSH permanent** avec reconnexion automatique (autossh + systemd)
-
----
-
 ## 🚀 Démarrage rapide
 
 ### Prérequis
@@ -217,7 +174,7 @@ homelab-devops/
 ├── services/                   ← Configs de production
 │   ├── monitoring/             ← Portainer + Grafana
 │   ├── n8n/                    ← Automatisation
-│   └── budget/                 ← App budget
+│   └── budget/                 ← App budget (Django + React)
 └── scripts/
     └── backup.sh               ← Backup PostgreSQL + volumes Docker
 ```
