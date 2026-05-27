@@ -35,7 +35,8 @@ services:
       - "9090:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus
+      - ./rules.yml:/etc/prometheus/rules.yml
+      - prometheus_data:/var/lib/prometheus
     restart: always
 
   node-exporter:
@@ -58,7 +59,18 @@ services:
       - /dev/disk/:/dev/disk:ro
     restart: always
 
+  alertmanager:
+    image: prom/alertmanager:v0.23.0
+    container_name: alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - alertmanager_data:/var/lib/alertmanager
+    restart: always
+
 volumes:
   portainer_data:
   grafana_data:
   prometheus_data:
+  alertmanager_data:
