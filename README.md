@@ -59,7 +59,10 @@ PC Windows (hôte) — Ollama GPU (Quadro P2000)
 | **Certbot** | Certificats SSL Let's Encrypt |
 | **autossh** | Tunnel SSH permanent (systemd) |
 | **Portainer** | Gestion Docker |
-| **Grafana** | Monitoring |
+| **Grafana** | Dashboards + alerting (email) |
+| **Prometheus** | Collecte de métriques |
+| **Alertmanager** | Routage des alertes Prometheus (email) |
+| **node-exporter / cAdvisor** | Métriques host + conteneurs |
 | **Ollama** | LLM local sur GPU |
 | **n8n** | Automatisation de workflows |
 | **PostgreSQL** | Base de données |
@@ -73,6 +76,7 @@ PC Windows (hôte) — Ollama GPU (Quadro P2000)
 - **2 bases PostgreSQL** (n8n + budget) sur srv-db
 - **Backups automatiques** quotidiens (PostgreSQL + volumes Docker)
 - **Tunnel SSH permanent** avec reconnexion automatique (autossh + systemd)
+- **Monitoring complet avec alertes email** — Prometheus + node-exporter + cAdvisor + Alertmanager v0.27.0 + Grafana Alerting (dashboard Grafana ID:1860)
 
 ---
 
@@ -208,7 +212,6 @@ homelab-devops/
 
 ## 🔭 Prochaines étapes
 
-- [ ] Prometheus + alerting
 - [ ] CI/CD — GitLab pipeline
 - [ ] Migration Kubernetes
 
